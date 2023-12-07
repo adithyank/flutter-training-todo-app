@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todo/store.dart';
+import 'package:todo/ServerStore.dart';
 
 class TodoPage extends StatefulWidget {
   const TodoPage({super.key});
@@ -80,7 +80,7 @@ class _TodoPageState extends State<TodoPage> {
                 ),
                 IconButton(
                     onPressed: () {
-                      TodoStore.addNew(todoBox.text).then((item) {
+                      ServerStore.addNew(todoBox.text).then((item) {
                         setState(() {
                           todoitems.add(item);
                           todoBox.text = '';
@@ -93,7 +93,7 @@ class _TodoPageState extends State<TodoPage> {
               ]
             ),
             FutureBuilder(
-                future: TodoStore.readAll(),
+                future: ServerStore.readAll(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState != ConnectionState.done)
                     return CircularProgressIndicator();
@@ -128,7 +128,7 @@ class _TodoPageState extends State<TodoPage> {
                   onChanged: (value) {
                     setState(() {
                       item.closed = value ?? false;
-                      TodoStore.save(item);
+                      ServerStore.save(item);
                     });
                   },
               ),
@@ -136,7 +136,7 @@ class _TodoPageState extends State<TodoPage> {
             IconButton(
                 onPressed: () {
                   setState(() {
-                    TodoStore.delete(item);
+                    ServerStore.delete(item);
                   });
                 },
                 icon: Icon(Icons.delete_outline, color: Colors.red)
@@ -155,4 +155,18 @@ class TodoItem
   bool closed;
 
   TodoItem(this.id, this.title, this.closed);
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'closed': closed
+    };
+  }
+
+  TodoItem.fromJson(Map<String, dynamic> obj) :
+        id = obj['id'],
+        title = obj['title'],
+        closed = obj['closed'];
+
 }
